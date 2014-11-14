@@ -1,0 +1,1 @@
+The cache folder must be chmod 777
