@@ -215,6 +215,7 @@ if(strpos($urlz, "http:") !== false) {
 							<li><b>Does it work with any website?</b> Certainly not. </li>
 							<li><b>Do we track you?</b> Only through Google <del>Echelon</del> Analytics.</li>
 							<li><b>Is it open source?</b> <a href="https://github.com/phixofor/unvis.it">Sure, why not?</a></li>
+							<li><b>I heard someone made a Firefox add-on?</b> <a href="https://addons.mozilla.org/en-US/firefox/addon/unvisit/">Indeed!</a></li>
 						</ul>
 					<p>Enjoy literally not feeding the trolls!</p>
 					<br>
