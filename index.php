@@ -1,18 +1,22 @@
 <?php
-if(!ob_start("ob_gzhandler")) ob_start(); // GZIP for speed
+if(!ob_start("ob_gzhandler")) ob_start(); //gzip-e-di-doo-da
 
-// Get the URL we want to unvisit
+// Try to remove http:// from bookmarklet and direct links. 
 $urlz = $_GET['u'];
 $urlz = $_SERVER['REQUEST_URI'];
 $urlz = substr($urlz, 1);
-// If it is unvisit, let's return false
 if (strpos($urlz, "unvis.") !== false) {header("Location: http://unvis.it", true, 303);}
 if(strpos($urlz, "http:") !== false) {
 	$str = $urlz;
-	// Try to remove http:// from bookmarklet and direct links. 
+	// Try to remove http(s):// from bookmarklet and direct links. 
 	$str = preg_replace('#^https?:/#', '', $str);
 	header("Location: http://".$_SERVER['HTTP_HOST'].$str, true, 303); 
 }
+
+use Readability\Readability;
+require_once 'uv/Readability.php';
+require_once 'uv/JSLikeHTMLElement.php';
+// New version uses namespaces, whatever that is?
 
 ?>
 <!DOCTYPE HTML>
@@ -20,12 +24,12 @@ if(strpos($urlz, "http:") !== false) {
 <head>
 	<meta charset="UTF-8">
 	<title><?php 
-		if ($urlz) { 
-			echo 'UV : '.$urlz;
-		} 
-		else { 
-			echo "unvis.it – avoid endorsing idiots";
-		} ?></title>
+			if ($urlz) { 
+				echo 'UV : '.$urlz;
+			} 
+			else { 
+				echo "unvis.it – avoid endorsing idiots";
+			} ?></title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<link rel="stylesheet" type="text/css" media="screen" href="/uv/css/bootstrap.min.css?v=2" />
@@ -49,7 +53,8 @@ if(strpos($urlz, "http:") !== false) {
 			<div class="row">
 				<br>
 				<div class="span2"></div>
-				<div class="span8" id="theInputForm">					
+				<div class="span8" id="theInputForm">
+					
 					<div class="input-prepend input-append">
 						 <span class="add-on"><a href="http://unvis.it" id="logo" ><strong>unvis.it/</strong></a> </span>
 						<input class="span6" id="appendedInputButton" type="text"  name="u" placeholder="Url you want to read without giving a pageview" value="<?php if ($urlz) { echo $urlz;} ?>" >
@@ -66,52 +71,54 @@ if(strpos($urlz, "http:") !== false) {
 			<?php
 			include_once("cache.php");
 			$cachen = new Cache;
-			$cachen->start();
-			// Start the cache, and if it isn't found in the cache-folder, let's start the caching.
+			$cachen->start(); // Start the cache, and if it isn't found in the cache-folder, let's start the caching.
 			if ($cachen->caching){
 			?>
 			<div id="theContent" class="span8">
 				<?php 
+				
 					
 					// Assign random search engine-crawler user agent
 					$UAnum = Rand (0,3) ; 
 
 					switch ($UAnum) 
  					{ 
-						case 0: 
+ 					case 0: 
 						$UAstring = "User-Agent: Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)\r\n"; 
-						break; 
+ 					break; 
  
-						case 1: 
-						$UAstring = "Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)\r\n"; 
-						break; 
+					case 1: 
+				 		$UAstring = "Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)\r\n"; 
+					break; 
  
-						case 2: 
-						$UAstring = "Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)\r\n"; 
-						break; 
+ 					case 2: 
+ 						$UAstring = "Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)\r\n"; 
+ 					break; 
  
-						case 3: 
-						$UAstring = "Baiduspider+(+http://www.baidu.com/search/spider.htm)  \r\n"; 
-						break;	
+ 					case 3: 
+	 					$UAstring = "Baiduspider+(+http://www.baidu.com/search/spider.htm)  \r\n"; 
+ 					break;
+					
+					// If this works, many lolz acquired.
+					
 					} 
 
-					//
 					if ($_GET["u"]) {
-						// Let's use Readability to parse the website
-						require_once 'uv/Readability.php'; 
-						// A simple MD5 to obfuscate the cached files
-						$cached = md5(urldecode($_GET["u"])); 
-						$url = urldecode($urlz);
-						// Remove http/s
-						if (!preg_match('!^https?://!i', $url)) $url = 'http://'.$url; 
+					
 
-							// Create a stream
-							$opts = array(
-								'http'=>array(
-									'method'=>"GET",
-									'header'=>$UAstring
-								)
-							);
+					$cached = md5(urldecode($_GET["u"]));
+
+					$url = urldecode($urlz);
+					
+					if (!preg_match('!^https?://!i', $url)) $url = 'http://'.$url;
+					
+					// Create a stream
+					$opts = array(
+					  'http'=>array(
+					    'method'=>"GET",
+					    'header'=>$UAstring
+					  )
+					);
 
 					$context = stream_context_create($opts);
 					$html = @file_get_contents($url, false, $context);
@@ -161,6 +168,8 @@ if(strpos($urlz, "http:") !== false) {
 							$tidy->cleanRepair();
 							$content = $tidy->value;
 						}
+						
+						
 						echo $content;
 					} else {
 						header("HTTP/1.0 404 Not Found");
@@ -172,8 +181,7 @@ if(strpos($urlz, "http:") !== false) {
 			</div>
 	    	<?php
 	  		}
-			// Stop the cache, as we might want to modify footer stuff
-	    	$cachen->end(); 
+	    	$cachen->end(); //Don't cache everything else :P
 	    	?>
 			<div class="span2"></div>
 	</div>
@@ -191,18 +199,16 @@ if(strpos($urlz, "http:") !== false) {
 			<div class="row">
 				<div class="span2"></div>
 				<div class="span8"><?php if ($urlz) {?><hr><?php }?><?php if ($urlz && $fourohfour == false) {?>
-					<small><em><b>Source:</b> <a href="http://<?php echo $urlz;?>"><?php echo $urlz;?></a></em></small>
+					<small><em><b>Source:</b> <a href="http://<?php echo $urlz; ?>"><?php echo $urlz; ?></a></em></small>
 					<hr>
-					<!--REMOVED: Adsense-->
-					<hr>
+					
 					<p style="text-align:center"><a href="/" class="btn" >What is unvis.it?</a></p>
 					<br><br><?php } else {?>
 					<?php 
 					// Awful way to make a toplist, but it works.
 					// TODO: 
-					// - Cache the toplist daily
-					require_once('uv/ga/toplist.php');
-					?>
+					// - Cache the toplist instead of calling GA.
+					require_once('uv/ga/toplist.php');?>
 					<hr>	
 					<h1 id="about">What is unvis.it?</h1>				
 					<p>Unvis.it is a tool to escape linkbaits, trolls, idiots and asshats. </p>
@@ -216,6 +222,7 @@ if(strpos($urlz, "http:") !== false) {
 							<li><b>Do we track you?</b> Only through Google <del>Echelon</del> Analytics.</li>
 							<li><b>Is it open source?</b> <a href="https://github.com/phixofor/unvis.it">Sure, why not?</a></li>
 							<li><b>I heard someone made a Firefox add-on?</b> <a href="https://addons.mozilla.org/en-US/firefox/addon/unvisit/">Indeed!</a></li>
+							<li><b>I need anonymous file hosting?</b> Check out <a href="http://minfil.org">Minfil.org</a></li>
 						</ul>
 					<p>Enjoy literally not feeding the trolls!</p>
 					<br>
@@ -276,6 +283,7 @@ if(strpos($urlz, "http:") !== false) {
 		});
 	});
 	</script>
+	<!-- Google Analytics Code removed -->
 	
 
 </body>
