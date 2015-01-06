@@ -25,7 +25,7 @@ A user will paste a link, or type unvis.it before the url in the address bar and
 - Now the user can share the link to the contents without providing traffic to stuff the user doesn't want to support.
 
 ## Built with:
-- PHP-Readability	: http://code.fivefilters.org/php-readability
+- PHP-Readability 1.7.2	: https://github.com/j0k3r/php-readability
 - SimpleCache		: http://devgrow.com/simple-cache-class/
 - SmartOptimizer	: https://github.com/farhadi/SmartOptimizer
 - Bootstrap 2.2.2	: https://github.com/twbs/bootstrap/releases/tag/v2.2.2
