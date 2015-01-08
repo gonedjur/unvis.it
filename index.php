@@ -43,9 +43,6 @@ require_once 'uv/JSLikeHTMLElement.php';
 	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/uv/img/apple-touch-icon-72-precomposed.png">
 	<link rel="apple-touch-icon-precomposed" href="/uv/img/apple-touch-icon-57-precomposed.png">
 	<link rel="shortcut icon" href="/uv/img/favicon.png">
-	<script type="text/javascript">
-	window.google_analytics_uacct = "UA-218515-24";
-	</script>
 </head>
 <body>
 	<div class="container">
