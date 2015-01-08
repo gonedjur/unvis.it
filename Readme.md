@@ -20,8 +20,8 @@ A user will paste a link, or type unvis.it before the url in the address bar and
 
 - CURL will fetch the URL with a randomized webcrawler user agent, in order to not stand out in server logs.
 - The web page will then be parsed through PHP Readability (by Fivefilters.org) to remove ads and other stuff.
-- If the MD5 sum of the url is NOT found as a .txt-file in the cache-folder, it will save it with that name and serve it.
-- If the MD5 sum of the url IS found as a .txt-file in the cache folder: serve that file instead.
+- If the base64 sum of the url is NOT found as a .txt-file in the cache-folder, it will save it with that name and serve it.
+- If the base64 sum of the url IS found as a .txt-file in the cache folder: serve that file instead.
 - Now the user can share the link to the contents without providing traffic to stuff the user doesn't want to support.
 
 ## Built with:
