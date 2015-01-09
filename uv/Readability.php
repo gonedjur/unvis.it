@@ -69,10 +69,10 @@ class Readability
      */
     public $regexps = array(
         'unlikelyCandidates' => '/display\s*:\s*none|ignore|\binfo|annoy|clock|date|time|author|intro|links|hidd?e|about|archive|\bprint|bookmark|tags|share|search|social|robot|published|combx|comment|mast(?:head)|subscri|community|category|disqus|extra|head(?:er|note)|floor|foot(?:er|note)|menu|tool|function|nav|remark|rss|shoutbox|tool|widget|meta|banner|sponsor|adsense|inner-?ad|ad-|sponsor|\badv\b|\bads\b|agr?egate?|pager|sidebar|popup|tweet|twitter/i',
-        'okMaybeItsACandidate' => '/article\b|contain|\bcontent|column|general|detail|shadow|lightbox|blog|body|entry|main|page/i',
-        'positive' => '/read|full|article|body|\bcontent|contain|entry|main|markdown|page|attach|pagination|post|text|blog|story/i',
+        'okMaybeItsACandidate' => '/article\b|contain|\bcontent|column|general|detail|shadow|lightbox|blog|body|entry|main|page|time/i',
+        'positive' => '/read|full|article|body|\bcontent|contain|entry|main|markdown|page|attach|pagination|post|text|blog|story|time/i',
         'negative' => '/bottom|stat|info|discuss|e[\-]?mail|comment|reply|log.{2}(n|ed)|sign|single|combx|com-|contact|_nav|link|media|\bout|promo|\bad-|related|scroll|shoutbox|sidebar|sponsor|shopping|teaser/i',
-        'divToPElements' => '/<(?:blockquote|code|div|article|footer|aside|img|p|pre|dl|ol|ul)/mi',
+        'divToPElements' => '/<(?:blockquote|code|div|article|footer|aside|img|p|pre|dl|ol|ul|time)/mi',
         'killBreaks' => '/(<br\s*\/?>([ \r\n\s]|&nbsp;?)*)+/',
         'media' => '!//(?:[^\.\?/]+\.)?(?:youtu(?:be)?|soundcloud|dailymotion|vimeo|pornhub|xvideos|twitvid|rutube|viddler)\.(?:com|be|org|net)/!i',
         'skipFootnoteLink' => '/^\s*(\[?[a-z0-9]{1,2}\]?|^|edit|citation needed)\s*$/i'
