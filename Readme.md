@@ -24,6 +24,16 @@ A user will paste a link, or type unvis.it before the url in the address bar and
 - If the base64 sum of the url IS found as a .txt-file in the cache folder: serve that file instead.
 - Now the user can share the link to the contents without providing traffic to stuff the user doesn't want to support.
 
+## TODO
+Things I would like to do, but have very little knowledge in how to achieve. If anyone feels that they can and want to contribute, I would appreciate it a lot.
+
+* Use memcache to speed things up
+* Use MySQL instead of files
+* Consolidate URL-caching so that www. and trailing slashes doesn't create separate files
+* Rehost images on imgur
+* Log debug output when Readability cannot find the main text
+* Something else you thought of, that I wouldn't in a million years...
+
 ## Built with:
 - PHP-Readability 1.7.2	: https://github.com/j0k3r/php-readability
 - SimpleCache		: http://devgrow.com/simple-cache-class/
