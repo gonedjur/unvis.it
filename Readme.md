@@ -29,7 +29,7 @@ Things I would like to do, but have very little knowledge in how to achieve. If 
 
 * Use memcache to speed things up
 * Use MySQL instead of files
-* Consolidate URL-caching so that www. and trailing slashes doesn't create separate files
+* Consolidate URL-caching so that www. and trailing slashes don't create separate caches
 * Rehost images on imgur
 * Log debug output when Readability cannot find the main text
 * Something else you thought of, that I wouldn't in a million years...
