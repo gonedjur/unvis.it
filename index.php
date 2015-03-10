@@ -8,7 +8,6 @@ $urlz = substr($urlz, 1);
 if (strpos($urlz, "unvis.") !== false) {header("Location: http://unvis.it", true, 303);}
 if(strpos($urlz, "http:") !== false) {
 	$str = $urlz;
-	// Try to remove http(s):// from bookmarklet and direct links. 
 	$str = preg_replace('#^https?:/#', '', $str);
 	header("Location: http://".$_SERVER['HTTP_HOST'].$str, true, 303); 
 }
@@ -16,25 +15,16 @@ if(strpos($urlz, "http:") !== false) {
 use Readability\Readability;
 require_once 'uv/Readability.php';
 require_once 'uv/JSLikeHTMLElement.php';
-// New version uses namespaces, whatever that is?
-
 ?>
 <!DOCTYPE HTML>
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title><?php 
-			if ($urlz) { 
-				echo 'UV : '.$urlz;
-			} 
-			else { 
-				echo "unvis.it – avoid endorsing idiots";
-			} ?></title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+	<title><?php if ($urlz) { echo 'UV : '.$urlz;} else { echo "unvis.it – avoid endorsing idiots";} ?></title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 	<meta name="apple-mobile-web-app-capable" content="yes" />
-	<link rel="stylesheet" type="text/css" media="screen" href="/uv/css/bootstrap.min.css?v=2" />
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
-	<script type="text/javascript" src="/uv/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" type="text/css" media="screen" href="/uv/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="/uv/css/bootstrap-theme.min.css" type="text/css" media="screen">
 	<!--[if IE]>
 		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
@@ -43,39 +33,46 @@ require_once 'uv/JSLikeHTMLElement.php';
 	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/uv/img/apple-touch-icon-72-precomposed.png">
 	<link rel="apple-touch-icon-precomposed" href="/uv/img/apple-touch-icon-57-precomposed.png">
 	<link rel="shortcut icon" href="/uv/img/favicon.png">
+	<script type="text/javascript">
+	window.google_analytics_uacct = "UA";
+	</script>
 </head>
 <body>
 	<div class="container">
 		<div id="head">
 			<div class="row">
 				<br>
-				<div class="span2"></div>
-				<div class="span8" id="theInputForm">
+				<div class="col-md-2"></div>
+				<div class="col-md-8" id="theInputForm">
+					<form class="form-inline">
+					  <div class="form-group">
+					    <label class="sr-only" for="exampleInputAmount">Amount (in dollars)</label>
+					    <div class="input-group">
+					      <div class="input-group-addon"><a href="http://unvis.it" id="logo" ><strong>unvis.it/</strong></a> </div>
+					      <input class="form-control" type="text" name="u" id="uv" placeholder="Url you want to read without giving a pageview" value="<?php if ($urlz) { echo $urlz;} ?>" >
+					    </div>
+					  </div>
+					 
+					</form>
 					
-					<div class="input-prepend input-append">
-						 <span class="add-on"><a href="http://unvis.it" id="logo" ><strong>unvis.it/</strong></a> </span>
-						<input class="span6" id="appendedInputButton" type="text"  name="u" placeholder="Url you want to read without giving a pageview" value="<?php if ($urlz) { echo $urlz;} ?>" >
-						<button class="btn" type="button" id="fetch">Go!</button>
-						
-					</div>
 					<hr>
 				</div>
-				<div class="span2"></div>
+				<div class="col-md-2"></div>
 			</div>
 		</div>
 		<div class="row">
-			<div class="span2"><?php if ($urlz) { ?><a href="javascript:(function(){sq=window.sq=window.sq||{};if(sq.script){sq.again();}else{sq.bookmarkletVersion='0.3.0';sq.iframeQueryParams={host:'//squirt.io',userId:'8a94e519-7e9a-4939-a023-593b24c64a2f',};sq.script=document.createElement('script');sq.script.src=sq.iframeQueryParams.host+'/bookmarklet/frame.outer.js';document.body.appendChild(sq.script);}})();" class="btn btn-mini hidden-phone" style="position: relative;top: 20px;" id="squirt">Speed read this</a><?php } ?></div>
+			<div class="col-md-2"><?php if ($urlz) { ?><a href="javascript:(function(){sq=window.sq=window.sq||{};if(sq.script){sq.again();}else{sq.bookmarkletVersion='0.3.0';sq.iframeQueryParams={host:'//squirt.io',userId:'8a94e519-7e9a-4939-a023-593b24c64a2f',};sq.script=document.createElement('script');sq.script.src=sq.iframeQueryParams.host+'/bookmarklet/frame.outer.js';document.body.appendChild(sq.script);}})();" class="btn btn-default btn-mini hidden-phone" style="position: relative;top: 20px;" id="squirt">Speed read this</a><?php } ?></div>
 			<?php
-			include_once("cache.php");
-			$cachen = new Cache;
-			$cachen->start(); // Start the cache, and if it isn't found in the cache-folder, let's start the caching.
-			if ($cachen->caching){
+			
+			include_once("dbhandler.php");
+			$db = new DBHandler();
+			$cachevalue = $db->read($urlz);
+			if (!$cachevalue && $urlz){
 			?>
-			<div id="theContent" class="span8">
+			<div id="theContent" class="col-md-8">
 				<?php 
-				
-					
-					// Assign random search engine-crawler user agent
+					echo "Looks like we couldn't find the content ¯\_(ツ)_/¯";
+					// User agent switcheroo
 					$UAnum = Rand (0,3) ; 
 
 					switch ($UAnum) 
@@ -103,8 +100,6 @@ require_once 'uv/JSLikeHTMLElement.php';
 					if ($_GET["u"]) {
 					
 
-					$cached = md5(urldecode($_GET["u"]));
-
 					$url = urldecode($urlz);
 					
 					if (!preg_match('!^https?://!i', $url)) $url = 'http://'.$url;
@@ -120,7 +115,7 @@ require_once 'uv/JSLikeHTMLElement.php';
 					$context = stream_context_create($opts);
 					$html = @file_get_contents($url, false, $context);
 					
-					
+				}
  
 					// PHP Readability works with UTF-8 encoded content. 
 					// If $html is not UTF-8 encoded, use iconv() or 
@@ -152,9 +147,11 @@ require_once 'uv/JSLikeHTMLElement.php';
 
 					// does it look like we found what we wanted?
 					if ($result) {
-						echo "<h1>";
-						echo $readability->getTitle()->textContent, "</h1><a href='http://unvis.it/". $urlz."' class='perma'>". $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']."</a>";
-						echo "<hr>";
+						$header = "<h1>";
+						$header .= $readability->getTitle()->textContent;
+						$header .= "</h1><a href='http://unvis.it/". $urlz."' class='perma'>". $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']."</a>";
+						$header .=  "<hr>";
+						echo $header;
 						$content = $readability->getContent()->innerHTML;
 
 						// if we've got Tidy, let's clean it up for output
@@ -164,27 +161,27 @@ require_once 'uv/JSLikeHTMLElement.php';
 								'UTF8');
 							$tidy->cleanRepair();
 							$content = $tidy->value;
+							$content = trim(preg_replace('/\s\s+/', ' ', $content));
 						}
 						
 						
 						echo $content;
-					} else {
-						header("HTTP/1.0 404 Not Found");
-						echo 'Looks like we couldn\'t find the content.';
-						$fourohfour = true;
+						$toCache = "<div id=\"theContent\" class=\"col-md-8\">";
+						$toCache .= $header.$content;
+						$toCache .= "</div>";
+						$db->cache($urlz,$toCache);
 					}
-				
-			  	?>
-			</div>
-	    	<?php
-	  		}
-	    	$cachen->end(); //Don't cache everything else :P
-	    	?>
-			<div class="span2"></div>
-	</div>
-	<?php
-		}
+				}else{
+				//echo "From cache:";
+				echo $cachevalue;
+			}
+			$fourohfour = False;
 		?>
+			</div>
+
+			<div class="col-md-2"></div>
+	</div>
+
 		
 	</div>
   	
@@ -194,19 +191,15 @@ require_once 'uv/JSLikeHTMLElement.php';
 	<div id="footer">
 		<div class="container">
 			<div class="row">
-				<div class="span2"></div>
-				<div class="span8"><?php if ($urlz) {?><hr><?php }?><?php if ($urlz && $fourohfour == false) {?>
-					<small><em><b>Source:</b> <a href="http://<?php echo $urlz; ?>"><?php echo $urlz; ?></a></em></small>
+				<div class="col-md-2"></div>
+				<div class="col-md-8"><?php if ($urlz) {?><hr><?php }?><?php if ( $urlz) {?>
+					<small><em><b>Source:</b> <a href="https://linkonym.appspot.com/?http://<?php echo $urlz; ?>"><?php echo $urlz; ?></a></em></small>
 					<hr>
 					
-					<p style="text-align:center"><a href="/" class="btn" >What is unvis.it?</a></p>
+					<p style="text-align:center"><a href="/" class="btn btn-default" >What is unvis.it?</a></p>
 					<br><br><?php } else {?>
-					<?php 
-					// Awful way to make a toplist, but it works.
-					// TODO: 
-					// - Cache the toplist instead of calling GA.
-					require_once('uv/ga/toplist.php');?>
-					<hr>	
+					<?php //require_once('uv/ga/toplist.php');?>
+					
 					<h1 id="about">What is unvis.it?</h1>				
 					<p>Unvis.it is a tool to escape linkbaits, trolls, idiots and asshats. </p>
 					<p>What the tool does is to try to capture the content of an article or blog post without passing on your visit as a pageview. Effectively this means that you're not paying with your attention, so you can <strong>read and share</strong> the idiocy that it contains.</p>
@@ -223,7 +216,7 @@ require_once 'uv/JSLikeHTMLElement.php';
 						</ul>
 					<p>Enjoy literally not feeding the trolls!</p>
 					<br>
-					<p style="text-align:center"> <a href="javascript:var orig%3Dlocation.href%3Blocation.replace(%27http://unvis.it/%27%2Borig)%3B" class="btn btn-small btn-info">Drag <b>this</b> to your bookmarks bar to unvis.it any page</a></p>
+					<p style="text-align:center"> <a href="javascript:var orig%3Dlocation.href%3Blocation.replace(%27http://unvis.it/%27%2Borig)%3B" class="btn btn-sm btn-info">Drag <b>this</b> to your bookmarks bar to unvis.it any page</a></p>
 					<hr>
 					<h2>Now: the same info in infographics</h2>
 					<p style="text-align:center;"><img src="/uv/img/unvisit-xplaind.png" alt="What's this, I don't even…" title="What's this, I don't even…" ></p>
@@ -231,46 +224,43 @@ require_once 'uv/JSLikeHTMLElement.php';
 					<p style="text-align:center">	
 						<img src="/uv/img/icon_large.png" alt="OMG LOGOTYPE" title="OMG LOGOTYPE" style="width:150px;height:150px">
 						<br><br><br>
-						<a href="http://www.lolontai.re"><img src="/uv/img/lulz.png" id="lulz" alt="Sir Lulz-a-Lot approves" title="Sir Lulz-a-Lot approves"></a>
+						<?php //<a href="http://www.lolontai.re"><img src="/uv/img/lulz.png" id="lulz" alt="Sir Lulz-a-Lot approves" title="Sir Lulz-a-Lot approves"></a>?>
 						<br><br><br><br><br><br><br><br>
 					</p>
 					<?php } ?>
 					</div>
 				</div>
-				<div class="span2"></div>
+				<div class="col-md-2"></div>
 			</div>
 		</div>
 	</div>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+	<script type="text/javascript" src="/uv/js/bootstrap.min.js"></script>
 <script type="text/javascript" >
 	$(document).ready(function() {
-		$("#appendedInputButton").change(function() {
-			theURL = $("#appendedInputButton").val();
+		$("#uv").change(function() {
+			theURL = $("#uv").val();
 			theURL = theURL.replace(/.*?:\/\//g, "");
 			theURL = decodeURIComponent(theURL);
-			$("#appendedInputButton").val(theURL);
+			$("#uv").val(theURL);
 		});
 		
-		$("#appendedInputButton").click(function() {
+		$("#uv").click(function() {
 			$(this).select();
 		});
 		
-		$("#fetch").click(function(){
-			var orig=$("#appendedInputButton").val();
+		function leSwitcheroo(){
+			var orig=$("#uv").val();
 			var urlz=location.host;
 			location.replace("http://"+urlz+"/"+orig);
-		});
+		};
 		
-		$("#appendedInputButton").keyup(function(event){
+		$("#uv").keyup(function(event){
 		    if(event.keyCode == 13){
-  				$("#fetch").click();
+  				leSwitcheroo()
 		    }
 		});
-		function sizing() {
-		  var formfilterswidth=$("#theInputForm").width();
-		  $("#appendedInputButton").width((formfilterswidth-125)+"px");
-		}
-		$(document).ready(sizing);
-		$(window).resize(sizing);
+		
 		$('.toplistLink a').on('click', function() {
 			var a_href = $(this).attr('href');
 			ga('send', 'event', 'toplist', 'click', a_href);
@@ -280,7 +270,24 @@ require_once 'uv/JSLikeHTMLElement.php';
 		});
 	});
 	</script>
-	<!-- Google Analytics Code removed -->
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA', 'unvis.it');
+	  ga('require', 'linkid', 'linkid.js');
+	  ga('send', 'pageview');
+	  
+	  
+
+	</script>
+	<noscript><img src="http://nojsstats.appspot.com/UA/<?php echo $_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];?><?php if($_SERVER['HTTP_REFERER']){echo '?r='.$_SERVER['HTTP_REFERER'];}; ?>&dummy=<?php echo rand(); ?>" /></noscript>
+	<!-- Begin Creeper tracker code -->
+	<a href="http://gnuheter.com/creeper/senaste" title="Creeper"><img src="http://gnuheter.com/creeper/image" alt="Creeper" width="1" height="1" border="0"/></a>
+	<!-- End Creeper tracker code -->
+	
 	
 
 </body>
